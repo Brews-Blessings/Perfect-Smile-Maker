@@ -1,0 +1,70 @@
+
+<div class="page-heading">
+  <div>
+    <h1>Patient file</h1>
+    <p>View and update patient information.</p>
+  </div>
+
+  <button class="btn btn-outline" data-page="patients">
+    ← Back to records
+  </button>
+</div>
+
+<div class="patient-file-card">
+
+  <section class="panel">
+    <div class="panel-head">
+      <h3>Patient information</h3>
+      <span class="role-chip" id="patientStatus">PATIENT RECORD</span>
+    </div>
+
+    <form id="editPatientForm">
+      <div class="form-grid">
+        <div class="field">
+          <label>Full name</label>
+          <input name="name" id="editName" required />
+        </div>
+
+        <div class="field">
+          <label>Phone number</label>
+          <input name="phone" id="editPhone" required />
+        </div>
+
+        <div class="field">
+          <label>Email address</label>
+          <input name="email" id="editEmail" type="email" />
+        </div>
+
+        <div class="field">
+          <label>Last visit</label>
+          <input id="editLast" disabled />
+        </div>
+      </div>
+
+      <div class="heading-actions" style="justify-content:flex-end;margin-top:12px">
+        <button type="submit" class="btn btn-primary">Save changes</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h3>Appointment history</h3>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>DATE</th>
+            <th>SERVICE</th>
+            <th>DENTIST</th>
+            <th>STATUS</th>
+          </tr>
+        </thead>
+        <tbody id="patientHistory"></tbody>
+      </table>
+    </div>
+  </section>
+
+</div>
