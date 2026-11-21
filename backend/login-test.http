@@ -1,0 +1,109 @@
+### Test Owner Login
+POST http://localhost:3000/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "owner01",
+  "password": "YOUR_OWNER_PASSWORD"
+}
+
+### GET ALL APPOINTMENTS
+GET http://localhost:3000/api/appointments
+Authorization: Bearer YOUR_JWT_TOKEN
+
+
+### CREATE NEW APPOINTMENT
+POST http://localhost:3000/api/appointments
+Authorization: Bearer YOUR_JWT_TOKEN
+Content-Type: application/json
+
+{
+  "patient_id": 1,
+  "doctor_id": 3,
+  "procedure_type": "Dental Cleaning",
+  "booking_type": "Online",
+  "appointment_datetime": "2026-11-24 11:30:00"
+}
+
+
+### UPDATE APPOINTMENT STATUS
+PATCH http://localhost:3000/api/appointments/10/status
+Authorization: Bearer YOUR_JWT_TOKEN
+Content-Type: application/json
+
+{
+  "appointment_status": "Completed"
+}
+
+
+### GET DOCTOR AVAILABLE SLOTS
+GET http://localhost:3000/api/doctors/slots?doctor_id=3&date=2026-11-24
+Authorization: Bearer YOUR_JWT_TOKEN
+
+
+### LOGIN AS RECEPTIONIST
+POST http://localhost:3000/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "recep01",
+  "password": "YOUR_RECEPTIONIST_PASSWORD"
+}
+
+
+### TEST RECEPTIONIST ACCESS TO OWNER-ONLY ENDPOINT
+PATCH http://localhost:3000/api/appointments/10/status
+Content-Type: application/json
+Authorization: Bearer YOUR_JWT_TOKEN
+
+{
+  "appointment_status": "Completed"
+}
+
+
+### TEST ACCESS WITHOUT TOKEN
+PATCH http://localhost:3000/api/appointments/10/status
+Content-Type: application/json
+
+{
+  "appointment_status": "Completed"
+}
+
+
+### TEST INVALID APPOINTMENT DATA
+POST http://localhost:3000/api/appointments
+Content-Type: application/json
+Authorization: Bearer YOUR_JWT_TOKEN
+
+{
+  "patient_id": "",
+  "doctor_id": "",
+  "procedure_type": "",
+  "booking_type": "",
+  "appointment_datetime": ""
+}
+
+
+### TEST INVALID APPOINTMENT ID
+PATCH http://localhost:3000/api/appointments/99999/status
+Content-Type: application/json
+Authorization: Bearer YOUR_JWT_TOKEN
+
+{
+  "appointment_status": "Completed"
+}
+
+
+### TEST INVALID APPOINTMENT STATUS
+PATCH http://localhost:3000/api/appointments/10/status
+Content-Type: application/json
+Authorization: Bearer YOUR_JWT_TOKEN
+
+{
+  "appointment_status": "Approved"
+}
+
+
+### TEST HOLIDAY API
+GET http://localhost:3000/api/holidays/2026
+Authorization: Bearer YOUR_JWT_TOKEN
