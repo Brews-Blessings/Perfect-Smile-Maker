@@ -13,47 +13,170 @@ const {
 // Retrieve all appointments
 // ==========================================
 
-router.get('/', authenticateToken, async (req, res) => {
-  try {
-    const [rows] = await db.query(`
-      SELECT
-        a.appointment_id,
-        a.patient_id,
-        p.full_name AS patient_name,
-        p.phone_number,
-        a.doctor_id,
-        d.doctor_name,
-        a.user_id,
-        u.full_name AS created_by,
-        a.procedure_type,
-        a.booking_type,
-        a.appointment_datetime,
-        a.appointment_status
-      FROM appointment a
-      INNER JOIN patient p
-        ON a.patient_id = p.patient_id
-      INNER JOIN doctor d
-        ON a.doctor_id = d.doctor_id
-      INNER JOIN user u
-        ON a.user_id = u.user_id
-      ORDER BY a.appointment_datetime DESC
-    `);
+router.get(
+  '/',
+  authenticateToken,
+  authorizeRoles('owner', 'receptionist'),
+  async (req, res) => {
+    try {
+      const role = req.user.role.toLowerCase();
 
-    res.status(200).json({
-      success: true,
-      message: 'Appointments retrieved successfully.',
-      data: rows
-    });
+      let conditions = [];
+      let params = [];
 
-  } catch (error) {
-    console.error('Appointment retrieval error:', error);
+      // Receptionist filters
+      if (role === 'receptionist') {
+        const { date, status, booking_type } = req.query;
 
-    res.status(500).json({
-      success: false,
-      message: 'Unable to retrieve appointments.'
-    });
+        if (date) {
+          if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+            return res.status(400).json({
+              success: false,
+              data: null,
+              message: 'Invalid date format. Use YYYY-MM-DD.'
+            });
+          }
+
+          conditions.push('DATE(a.appointment_datetime) = ?');
+          params.push(date);
+        }
+
+        const allowedStatuses = [
+          'Scheduled',
+          'Completed',
+          'Cancelled',
+          'No-show'
+        ];
+
+        if (status) {
+          if (!allowedStatuses.includes(status)) {
+            return res.status(400).json({
+              success: false,
+              data: null,
+              message: 'Invalid appointment status.'
+            });
+          }
+
+          conditions.push('a.appointment_status = ?');
+          params.push(status);
+        }
+
+        if (booking_type) {
+          const allowedBookingTypes = ['Online', 'Walk-in'];
+
+          if (!allowedBookingTypes.includes(booking_type)) {
+            return res.status(400).json({
+              success: false,
+              data: null,
+              message: 'Invalid booking type.'
+            });
+          }
+
+          conditions.push('a.booking_type = ?');
+          params.push(booking_type);
+        }
+      }
+
+      const whereClause = conditions.length
+        ? `WHERE ${conditions.join(' AND ')}`
+        : '';
+
+      const baseQuery = `
+        FROM appointment a
+        INNER JOIN patient p
+          ON a.patient_id = p.patient_id
+        INNER JOIN doctor d
+          ON a.doctor_id = d.doctor_id
+        INNER JOIN user u
+          ON a.user_id = u.user_id
+        ${whereClause}
+      `;
+
+      // Owner pagination
+      let pagination = null;
+      let limitClause = '';
+      let queryParams = [...params];
+
+      if (role === 'owner') {
+        const page = Number(req.query.page) || 1;
+        const limit = Number(req.query.limit) || 10;
+
+        if (
+          !Number.isInteger(page) ||
+          !Number.isInteger(limit) ||
+          page < 1 ||
+          limit < 1 ||
+          limit > 100
+        ) {
+          return res.status(400).json({
+            success: false,
+            data: null,
+            message: 'Invalid pagination parameters.'
+          });
+        }
+
+        const offset = (page - 1) * limit;
+
+        limitClause = 'LIMIT ? OFFSET ?';
+        queryParams.push(limit, offset);
+
+        const [countRows] = await db.query(
+          `SELECT COUNT(*) AS total ${baseQuery}`,
+          params
+        );
+
+        const total = countRows[0].total;
+
+        pagination = {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit)
+        };
+      }
+
+      const [rows] = await db.query(
+        `
+          SELECT
+            a.appointment_id,
+            a.patient_id,
+            p.full_name AS patient_name,
+            p.phone_number,
+            a.doctor_id,
+            d.doctor_name,
+            a.user_id,
+            u.full_name AS created_by,
+            a.procedure_type,
+            a.booking_type,
+            a.appointment_datetime,
+            a.appointment_status
+          ${baseQuery}
+          ORDER BY a.appointment_datetime DESC
+          ${limitClause}
+        `,
+        queryParams
+      );
+
+      res.status(200).json({
+        success: true,
+        data: {
+          appointments: rows,
+          pagination
+        },
+        message: 'Appointments retrieved successfully.'
+      });
+
+    } catch (error) {
+      console.error('Appointment retrieval error:', error);
+
+      res.status(500).json({
+        success: false,
+        data: null,
+        message: 'Unable to retrieve appointments.'
+      });
+    }
   }
-});
+);
 
 
 // ==========================================
