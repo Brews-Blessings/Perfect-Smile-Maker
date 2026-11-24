@@ -3,11 +3,14 @@ FROM node:24
 
 WORKDIR /app
 
+# Copy backend dependency files
 COPY backend/package*.json ./
 
+# Install production dependencies
 RUN npm ci --omit=dev
 
-COPY backend/ .
+# Copy backend source files
+COPY backend/ ./
 
 EXPOSE 3000
 
