@@ -1,5 +1,90 @@
-
 # Perfect Smile Maker
+
+Appointment and File Tracking Web System for Perfect Smile Maker Dental Clinic.
+
+## Requirements
+
+- Git
+- Node.js 24.x
+- npm
+- MySQL 8.0 or Docker Desktop (for the MySQL container)
+
+## 1. Clone the Repository
+
+```bash
+git clone https://github.com/Brews-Blessings/Perfect-Smile-Maker.git
+cd Perfect-Smile-Maker
+```
+
+## 2. Set Up the Database
+
+Using MySQL Workbench, execute these files in order:
+
+1. `database/schema.sql`
+2. `database/sample_data.sql` (run once only)
+
+Or use the MySQL command line:
+
+```bash
+mysql -u root -p < database/schema.sql
+mysql -u root -p psm_db < database/sample_data.sql
+```
+
+For detailed database documentation and testing instructions, see [`database/README.md`](database/README.md).
+
+## 3. Configure the Backend
+
+Navigate to the backend directory:
+
+```bash
+cd backend
+```
+
+Create your local environment file:
+
+```powershell
+copy .env.example .env
+```
+
+Update `.env` with your local MySQL credentials and a secure JWT secret.
+
+Example for MySQL running on port 3306:
+
+```env
+PORT=3000
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=your_mysql_password
+DB_NAME=psm_db
+JWT_SECRET=your_secure_secret
+```
+
+Do not commit your actual `.env` file.
+
+## 4. Install Dependencies
+
+From the `backend` directory:
+
+```bash
+npm ci
+```
+
+## 5. Start the Backend
+
+```bash
+npm start
+```
+
+The backend runs at `http://localhost:3000`.
+
+API health check: `http://localhost:3000/api/health`
+
+## 6. Run Automated Tests
+
+```bash
+npm test
+```
 
 ## Docker Setup
 
@@ -12,13 +97,19 @@ This project uses Docker Compose to run the MySQL database and Node.js backend.
 
 ### 1. Configure Environment Variables
 
+If you followed the backend setup above, return to the project root first:
+
+```bash
+cd ..
+```
+
 Copy the Docker environment example:
 
 ```bash
 cp .env.docker.example .env
 ```
 
-Open the `.env` file and configure the following variables:
+Open the root `.env` file and configure:
 
 - `MYSQL_ROOT_PASSWORD`
 - `DB_PASSWORD`
@@ -30,7 +121,7 @@ Use a strong, unique password and a secure random JWT secret. Do not commit your
 
 ### 2. Start the Application
 
-Run:
+Run from the project root:
 
 ```bash
 docker compose up --build -d
@@ -57,7 +148,7 @@ Changes to `schema.sql` or `sample_data.sql` will therefore not automatically up
 
 ### 4. Access the Application
 
-- Backend API: http://localhost:3001
+- Backend API: `http://localhost:3001`
 - MySQL host port: `3307`
 
 The backend connects to MySQL internally through the Docker network using host `mysql` and port `3306`.
