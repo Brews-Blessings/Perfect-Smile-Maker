@@ -90,6 +90,12 @@ npm test
 
 The root `docker-compose.yml` provides a MySQL 8.0 container.
 
+If you followed the backend setup above, return to the project root first:
+
+```bash
+cd ..
+```
+
 Create a root-level `.env` file with:
 
 ```env
