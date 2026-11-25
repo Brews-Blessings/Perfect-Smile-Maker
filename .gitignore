@@ -21,6 +21,7 @@ pnpm-debug.log*
 # Operating system files
 .DS_Store
 Thumbs.db
+
 desktop.ini
 
 # IDE and editor files
@@ -37,3 +38,7 @@ coverage/
 # Build outputs
 dist/
 build/
+*.log
+
+node_modules/
+.env
