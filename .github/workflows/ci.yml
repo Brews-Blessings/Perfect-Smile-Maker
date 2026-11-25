@@ -1,4 +1,5 @@
-﻿name: PSM CI Pipeline
+﻿
+name: PSM CI Pipeline
 
 on:
   push:
@@ -24,6 +25,10 @@ jobs:
 
       - name: Install backend dependencies
         run: npm ci
+        working-directory: backend
+
+      - name: Run backend tests
+        run: npm test
         working-directory: backend
 
       - name: Validate JavaScript syntax
