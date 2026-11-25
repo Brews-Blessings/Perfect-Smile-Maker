@@ -1,0 +1,41 @@
+﻿
+name: PSM CI Pipeline
+
+on:
+  push:
+    branches:
+      - develop
+      - feature/franchesca-devops
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  validate-and-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install backend dependencies
+        run: npm ci
+        working-directory: backend
+
+      - name: Run backend tests
+        run: npm test
+        working-directory: backend
+
+      - name: Validate JavaScript syntax
+        run: |
+          find backend -type f -name "*.js" \
+            -not -path "*/node_modules/*" \
+            -print0 | xargs -0 -n1 node --check
+
+      - name: Build Docker image
+        run: docker build -t psm-backend:ci .

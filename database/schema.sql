@@ -1,3 +1,4 @@
+
 -- =====================================================================
 -- Perfect Smile Maker (PSM) - Database Schema (MySQL 8, InnoDB)
 -- Matches the approved Phase 2 ERD, SDS Section III, and the psm_db
