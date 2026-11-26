@@ -11,6 +11,9 @@ This document records the automated and manual API tests performed for the Perfe
 - Automated Testing: Node.js Test Runner
 - Local API URL: `http://localhost:3000`
 
+**Testing Date:** November 25, 2026
+**Tested By:** Mark Neo D. Mendoza
+
 ### Test Account Information
 
 The following accounts were used for manual API authentication testing:
@@ -33,7 +36,7 @@ The following automated tests were executed using `npm.cmd test` from the backen
 | 3 | Patients endpoint without authentication | 401 Unauthorized | 401 Unauthorized | Passed |
 | 4 | Dashboard endpoint without authentication | 401 Unauthorized | 401 Unauthorized | Passed |
 | 5 | Holidays endpoint with invalid year | 400 Bad Request | 400 Bad Request | Passed |
-| 6 | Holidays endpoint with simulated external API failure | 502 Bad Gateway | 502 Bad Gateway | Passed |
+| 6 | Holidays endpoint with mocked external API failure | 502 Bad Gateway | 502 Bad Gateway | Passed |
 
 **Automated Test Summary:**
 - Total Tests: 6
@@ -41,6 +44,7 @@ The following automated tests were executed using `npm.cmd test` from the backen
 - Failed: 0
 
 ## 3. Manual API Testing – Postman
+Postman screenshots supporting the manual API test results are available in the `docs/images/` folder.
 
 The following API requests were manually tested using Postman.
 
