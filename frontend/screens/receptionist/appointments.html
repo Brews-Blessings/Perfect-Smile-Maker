@@ -1,0 +1,41 @@
+
+<div class="page-heading">
+  <div>
+    <h1>Appointments</h1>
+    <p>View and manage all clinic appointments.</p>
+  </div>
+</div>
+
+<section class="panel">
+  <div class="toolbar">
+    <input id="appointmentSearch" placeholder="Search patient or service..." />
+
+    <select id="appointmentFilter">
+      <option value="All">All statuses</option>
+      <option value="Scheduled">Scheduled</option>
+      <option value="Pending">Pending</option>
+      <option value="Confirmed">Confirmed</option>
+      <option value="Completed">Completed</option>
+      <option value="Cancelled">Cancelled</option>
+    </select>
+
+    <input type="date" id="appointmentDate" aria-label="Filter by date" />
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>DATE</th>
+          <th>TIME</th>
+          <th>PATIENT</th>
+          <th>SERVICE</th>
+          <th>DENTIST</th>
+          <th>STATUS</th>
+          <th>ACTION</th>
+        </tr>
+      </thead>
+      <tbody id="appointmentTable"></tbody>
+    </table>
+  </div>
+</section>
