@@ -34,7 +34,7 @@ https://date.nager.at/api/v3/PublicHolidays/2026/PH
 
 *Parameters:*
 
-| Parameter | Description | Example |
+| Path Component | Description | Example |
 |---|---|---|
 | year | The year of the requested holidays | 2026 |
 | PH | Country code for the Philippines | PH |
@@ -157,7 +157,7 @@ The following tests were performed using Postman:
 | Request the same year again | 200 OK with cached message | Passed |
 | Request without authentication | 401 Unauthorized | Passed |
 | Request with an invalid year | 400 Bad Request | Passed |
-| Simulate external API failure | 502 Bad Gateway | Passed through automated test |
+| Simulated external API failure | 502 Bad Gateway | Passed in automated test |
 
 *Postman Screenshots*
 
