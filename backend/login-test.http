@@ -37,8 +37,8 @@ Content-Type: application/json
 
 
 ### GET DOCTOR AVAILABLE SLOTS
-GET http://localhost:3000/api/doctors/slots?doctor_id=3&date=2026-11-24
-Authorization: Bearer YOUR_JWT_TOKEN
+GET http://localhost:3000/api/doctors/slots?doctor_id=3&date=2026-11-28
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImZ1bGxOYW1lIjoiQ2xpbmljIFJlY2VwdGlvbiIsInJvbGUiOiJSZWNlcHRpb25pc3QiLCJpYXQiOjE3OTU3ODg4NTQsImV4cCI6MTc5NTgxNzY1NH0.bOWRSIqp_pMAIEWai3UqA12plE3mW-DxgEtFmGpWKXw
 
 
 ### LOGIN AS RECEPTIONIST
@@ -47,7 +47,7 @@ Content-Type: application/json
 
 {
   "username": "recep01",
-  "password": "YOUR_RECEPTIONIST_PASSWORD"
+  "password": "PSMtest123!"
 }
 
 
@@ -106,4 +106,9 @@ Authorization: Bearer YOUR_JWT_TOKEN
 
 ### TEST HOLIDAY API
 GET http://localhost:3000/api/holidays/2026
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImZ1bGxOYW1lIjoiQ2xpbmljIFJlY2VwdGlvbiIsInJvbGUiOiJSZWNlcHRpb25pc3QiLCJpYXQiOjE3OTU3ODk1NzUsImV4cCI6MTc5NTgxODM3NX0.v-UiQ9DnK4vd_gHLPAClqEKegzrliO9wp_HzEPL0Vz0
+
+
+### GET DOCTOR AVAILABLE SLOTS
+GET http://localhost:3000/api/doctors/slots?doctor_id=1&date=2026-11-28
 Authorization: Bearer YOUR_JWT_TOKEN

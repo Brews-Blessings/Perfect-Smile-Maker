@@ -1,17 +1,44 @@
-
 const router = require('express').Router();
 const db = require('../db');
 const { authenticateToken } = require('../middleware/auth');
 
 // ==========================================
 // GET /api/doctors/slots
-// Check dentist availability on a selected date
+// Check a doctor's availability on a selected date
 // ==========================================
+
+const CLINIC_TIMES = [
+  '09:00:00',
+  '10:00:00',
+  '10:30:00',
+  '11:00:00',
+  '13:00:00',
+  '14:00:00',
+  '15:00:00'
+];
+
+// Validate actual calendar date
+function isValidCalendarDate(value) {
+  if (
+    typeof value !== 'string' ||
+    !/^\d{4}-\d{2}-\d{2}$/.test(value)
+  ) {
+    return false;
+  }
+
+  const parsed = new Date(`${value}T00:00:00.000Z`);
+
+  return !Number.isNaN(parsed.getTime()) &&
+    parsed.toISOString().slice(0, 10) === value;
+}
 
 router.get('/slots', authenticateToken, async (req, res) => {
   try {
     const { doctor_id, date } = req.query;
 
+    const selectedDoctor = Number(doctor_id);
+
+    // Validate required parameters
     if (!doctor_id || !date) {
       return res.status(400).json({
         success: false,
@@ -19,8 +46,7 @@ router.get('/slots', authenticateToken, async (req, res) => {
       });
     }
 
-    const selectedDoctor = Number(doctor_id);
-
+    // Validate doctor ID
     if (!Number.isInteger(selectedDoctor) || selectedDoctor <= 0) {
       return res.status(400).json({
         success: false,
@@ -28,16 +54,19 @@ router.get('/slots', authenticateToken, async (req, res) => {
       });
     }
 
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    // Validate date
+    if (!isValidCalendarDate(date)) {
       return res.status(400).json({
         success: false,
-        message: 'Invalid appointment date format.'
+        message: 'Invalid appointment date. Use a valid YYYY-MM-DD date.'
       });
     }
 
-    // Check if doctor exists.
+    // Check if doctor exists
     const [doctors] = await db.query(
-      'SELECT doctor_id, doctor_name FROM doctor WHERE doctor_id = ?',
+      `SELECT doctor_id, doctor_name
+       FROM doctor
+       WHERE doctor_id = ?`,
       [selectedDoctor]
     );
 
@@ -48,37 +77,51 @@ router.get('/slots', authenticateToken, async (req, res) => {
       });
     }
 
-    // Retrieve booked appointment times.
+    // Get current date and time from MySQL
+    const [clockRows] = await db.query(
+      'SELECT CURDATE() AS today, CURTIME() AS current_time'
+    );
+
+    const today = String(clockRows[0].today).slice(0, 10);
+    const currentTime = String(clockRows[0].current_time).slice(0, 8);
+
+    // Reject past dates
+    if (date < today) {
+      return res.status(400).json({
+        success: false,
+        message: 'Cannot check availability for a past date.'
+      });
+    }
+
+    // Retrieve booked appointment times
+    // Only cancelled appointments are excluded.
     const [appointments] = await db.query(
       `SELECT TIME(appointment_datetime) AS appointment_time
        FROM appointment
        WHERE doctor_id = ?
-       AND DATE(appointment_datetime) = ?
-       AND appointment_status != 'Cancelled'
-       ORDER BY appointment_datetime ASC`,
+         AND DATE(appointment_datetime) = ?
+         AND appointment_status <> 'Cancelled'`,
       [selectedDoctor, date]
     );
 
-    // Clinic time slots.
-    const availableTimes = [
-      '09:00:00',
-      '10:00:00',
-      '10:30:00',
-      '11:00:00',
-      '13:00:00',
-      '14:00:00',
-      '15:00:00'
-    ];
-
-    const bookedTimes = appointments.map(appointment =>
-      String(appointment.appointment_time).substring(0, 8)
+    // Store booked times
+    const bookedTimes = new Set(
+      appointments.map(appointment =>
+        String(appointment.appointment_time).substring(0, 8)
+      )
     );
 
-    const slots = availableTimes.map(time => ({
-      time,
-      available: !bookedTimes.includes(time)
-    }));
+    // Determine slot availability
+    const slots = CLINIC_TIMES.map(time => {
+      const isPastTime = date === today && time <= currentTime;
 
+      return {
+        time,
+        available: !bookedTimes.has(time) && !isPastTime
+      };
+    });
+
+    // Return doctor availability
     return res.status(200).json({
       success: true,
       message: 'Doctor availability retrieved successfully.',
