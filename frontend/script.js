@@ -1,6 +1,7 @@
 const $ = (selector, root = document) => root.querySelector(selector);
 
-const API_BASE = 'http://localhost:3000/api';const TOKEN_KEY = 'psm_token';
+const API_BASE = '/api';
+const TOKEN_KEY = 'psm_token';
 const USER_KEY = 'psm_user';
 
 let currentRole = 'owner';
