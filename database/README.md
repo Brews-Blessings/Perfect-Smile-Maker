@@ -8,14 +8,14 @@ It follows the approved Phase 2 ERD and SDS Section III, and was checked against
 | File | Purpose |
 |---|---|
 | `schema.sql` | Creates the `psm_db` database, 4 tables, primary keys, foreign keys and indexes |
-| `sample_data.sql` | Fake test data (5 patients, 3 doctors, 2 users, 8 appointments) |
+| `sample_data.sql` | Fake test data (5 patients, 1 doctor, 2 users, 8 appointments). Safe to run more than once |
 | `queries.sql` | Reference queries for the backend, grouped by DFD process: login, appointments (key transaction, schedule check, status), patient files, search and filter |
 | `test_database.sql` | Tests for relationships, constraints and index count |
 
 ## Create and populate the database
 Using MySQL Workbench: open each file and run it (lightning bolt), in this order:
 1. `schema.sql`
-2. `sample_data.sql` (run once only)
+2. `sample_data.sql` (safe to run again: it checks for existing rows first)
 
 Using the command line:
 ```
@@ -72,12 +72,18 @@ doctor or user that still has appointments cannot be deleted.
 ## Value conventions
 - `user.role`: `Owner` or `Receptionist`
 - `appointment.booking_type`: `Online` or `Walk-in`
-- `appointment.appointment_status`: `Scheduled`, `Completed`, `Cancelled`, `No-show`
+- `appointment.appointment_status`: `Pending`, `Confirmed`, `Completed`, `Cancelled`, `No-show`
+  - Online bookings start as `Pending`; walk-ins start as `Confirmed`.
+  - Allowed changes: `Pending` -> `Confirmed` or `Cancelled`; `Confirmed` -> `Completed`, `Cancelled` or `No-show`. `Completed`, `Cancelled` and `No-show` are final.
+  - `Cancelled` and `No-show` free the time slot. `No Appointment` is a display label only and is never stored.
 
 ## Notes for the backend
 - Database name: `psm_db`
 - `password_hash` in the sample data is a placeholder. Real passwords must be hashed with bcrypt by the backend.
 - Use parameterized queries (see `queries.sql`).
+- The clinic has one doctor (Dr. Angela M.), added by `sample_data.sql`. Doctors are read-only in the app, so there is no create-doctor endpoint.
+- Double-booking is not blocked by the database. The backend must check the slot inside a transaction and return HTTP 409 (see the key transaction in `queries.sql`).
+- `last_visit` and the latest status are worked out from `appointment` when a patient is read. They are not columns.
 
 ## Testing
 Run `test_database.sql` one statement at a time. Tests 3, 4 and 5 are supposed to fail with errors
