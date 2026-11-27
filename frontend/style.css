@@ -158,7 +158,7 @@ button {
   font-size: 14px;
   line-height: 1.8;
   max-width: 350px;
-  color: #fffdebdc;
+  color: #ffffffdc;
 }
 
 .hero-foot {
@@ -615,11 +615,6 @@ tbody tr:last-child td {
   display: inline-block;
 }
 
-.status.scheduled {
-  background: #edf3ff;
-  color: #4777b8;
-}
-
 .status.pending {
   background: #fff5df;
   color: #a87515;
@@ -638,6 +633,16 @@ tbody tr:last-child td {
 .status.cancelled {
   background: #fdecef;
   color: #c43e55;
+}
+
+.status.no-show {
+  background: #f1eafe;
+  color: #7045a5;
+}
+
+.status.no-appointment {
+  background: #edf0f4;
+  color: #687181;
 }
 
 
@@ -1207,64 +1212,21 @@ tbody tr:last-child td {
   }
 }
 
-.doctor-modal {
-  width: min(440px, 92%);
-}
 
-.doctor-modal .modal-header p {
-  color: var(--muted);
-  font-size: 13px;
-  margin-top: 5px;
+/* Step 8: validation and appointment follow-up */
+.invalid-field {
+  border-color: #d64545 !important;
+  outline: 2px solid rgba(214, 69, 69, 0.14);
 }
-
-.doctor-modal .modal-body {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
+.appointment-overdue {
+  background: rgba(214, 69, 69, 0.035);
 }
-
-.doctor-modal .field {
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-}
-
-.doctor-modal .field label {
-  font-size: 13px;
+.overdue-note {
+  display: block;
+  margin-top: 4px;
+  color: #b54747;
+  font-size: 11px;
   font-weight: 600;
 }
 
-.doctor-modal .field input {
-  width: 100%;
-}
-/* ADD DOCTOR POPUP */
-
-.doctor-modal {
-  width: min(450px, 100%);
-}
-
-.doctor-select-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.doctor-select-row select {
-  flex: 1;
-  min-width: 0;
-}
-
-.doctor-select-row button {
-  white-space: nowrap;
-}
-
-@media (max-width: 500px) {
-  .doctor-select-row {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .doctor-select-row button {
-    width: 100%;
-  }
-}
+.confirmation-details { white-space: pre-line; line-height: 1.7; margin-top: 10px; }

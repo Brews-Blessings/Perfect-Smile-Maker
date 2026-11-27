@@ -1,4 +1,24 @@
 <div class="modal-card popup-small">
-  <div class="modal-header"><strong>Update Appointment Status</strong><button class="modal-close" data-close-popup>×</button></div>
-  <form id="ownerStatusForm"><div class="modal-body"><div class="field"><label>Appointment Status</label><select name="status"><option>Scheduled</option><option>Pending</option><option>Confirmed</option><option>Completed</option><option>Cancelled</option></select></div></div><div class="modal-footer"><button type="button" class="btn btn-outline" data-close-popup>Cancel</button><button type="submit" class="btn btn-primary">Save Changes</button></div></form>
+<div class="modal-header">
+<strong>Update Appointment Status</strong>
+<button class="modal-close" data-close-popup="">×</button>
+</div>
+<form id="ownerStatusForm">
+<div class="modal-body">
+<div class="field">
+<label for="ownerAppointmentStatus">Appointment Status</label>
+<select id="ownerAppointmentStatus" name="status">
+<option value="Pending">Pending</option>
+<option value="Confirmed">Confirmed</option>
+<option value="Completed">Completed</option>
+<option value="Cancelled">Cancelled</option>
+<option value="No-show">No-show</option>
+</select>
+</div>
+</div>
+<div class="modal-footer">
+<button class="btn btn-outline" data-close-popup="" type="button">Cancel</button>
+<button class="btn btn-primary" type="submit">Save Changes</button>
+</div>
+</form>
 </div>
