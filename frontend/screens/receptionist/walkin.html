@@ -1,123 +1,96 @@
 
 <div class="page-heading">
-  <div>
-    <h1>Walk-in patient</h1>
-    <p>Register a patient who visits the clinic without a prior appointment.</p>
-  </div>
+<div>
+<h1>Walk-in patient</h1>
+<p>Register a patient who visits the clinic without a prior appointment.</p>
 </div>
-
+</div>
 <div class="form-layout">
-  <form id="bookingForm">
-
-    <section class="form-section">
-      <h3>Patient details</h3>
-
-      <div class="form-grid">
-        <div class="field">
-          <label>Full name *</label>
-          <input name="name" placeholder="Enter patient's full name" required />
-        </div>
-
-        <div class="field">
-          <label>Phone number *</label>
-          <input name="phone" type="tel" placeholder="09XX XXX XXXX" required />
-        </div>
-
-        <div class="field">
-          <label>Email address</label>
-          <input name="email" type="email" placeholder="patient@email.com" />
-        </div>
-
-        <div class="field">
-          <label>Birth date</label>
-          <input name="birth" type="date" />
-        </div>
-
-        <div class="field">
-          <label>Gender</label>
-          <select name="gender">
-            <option value="">Select gender</option>
-            <option>Female</option>
-            <option>Male</option>
-            <option>Prefer not to say</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label>Address</label>
-          <input name="address" placeholder="Patient address" />
-        </div>
-      </div>
-    </section>
-
-    <section class="form-section">
-      <h3>Appointment details</h3>
-
-      <div class="form-grid">
-        <div class="field">
-          <label>Appointment date *</label>
-          <input name="date" type="date" required />
-        </div>
-
-        <div class="field">
-          <label>Preferred time *</label>
-          <select name="time" required>
-            <option value="">Select time</option>
-            <option>09:00 AM</option>
-            <option>10:00 AM</option>
-            <option>10:30 AM</option>
-            <option>11:00 AM</option>
-            <option>01:00 PM</option>
-            <option>02:00 PM</option>
-            <option>03:00 PM</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label>Service *</label>
-          <select name="service" required>
-            <option value="">Select service</option>
-            <option>Dental Cleaning</option>
-            <option>Tooth Extraction</option>
-            <option>Consultation</option>
-            <option>Dental Filling</option>
-            <option>Braces Adjustment</option>
-            <option>Teeth Whitening</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label>Dentist *</label>
-          <select name="dentist" required>
-            <option value="">Select dentist</option>
-            <option>Dr. Angela M.</option>
-            <option>Dr. John D.</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="field">
-        <label>Notes / concerns</label>
-        <textarea name="notes" placeholder="Additional information..."></textarea>
-      </div>
-    </section>
-
-    <div class="heading-actions">
-      <button type="reset" class="btn btn-outline">Clear form</button>
-      <button type="submit" class="btn btn-primary">Register walk-in patient</button>
-    </div>
-
-  </form>
-
-  <aside>
-    <section class="panel">
-      <div class="panel-head">
-        <h3>Schedule information</h3>
-      </div>
-      <p class="small-note">
+<form id="bookingForm">
+<section class="form-section">
+<h3>Patient details</h3>
+<div class="form-grid">
+<div class="field">
+<label>Full name *</label>
+<input aria-label="Enter patient's full name" maxlength="50" name="name" placeholder="Enter patient's full name" required=""/>
+</div>
+<div class="field">
+<label>Phone number *</label>
+<input aria-label="09XX XXX XXXX" maxlength="20" name="phone" pattern="09[0-9]{2} ?[0-9]{3} ?[0-9]{4}" placeholder="09XX XXX XXXX" required="" title="Enter a Philippine mobile number in the format 09XX XXX XXXX." type="tel"/>
+</div>
+<div class="field">
+<label>Birthday</label>
+<input aria-label="birthday" name="birthday" type="date"/>
+</div>
+<div class="field">
+<label>Address</label>
+<input aria-label="Patient address" maxlength="100" name="address" placeholder="Patient address"/>
+</div>
+<div class="field">
+<label>Occupation</label>
+<input aria-label="Patient occupation" maxlength="50" name="occupation" placeholder="Patient occupation"/>
+</div>
+<div class="field">
+<label>Civil status</label>
+<select aria-label="civil_status" name="civil_status" required="">
+<option value="">Select civil status</option>
+<option value="Single">Single</option>
+<option value="Married">Married</option>
+<option value="Widowed">Widowed</option>
+<option value="Separated">Separated</option>
+</select>
+</div>
+</div>
+</section>
+<section class="form-section">
+<h3>Appointment details</h3>
+<div class="form-grid">
+<div class="field">
+<label>Appointment date *</label>
+<input aria-label="date" min="" name="date" required="" type="date"/>
+</div>
+<div class="field">
+<label>Preferred time *</label>
+<select aria-label="time" name="time" required="">
+<option value="">Select time</option>
+<option>09:00 AM</option>
+<option>10:00 AM</option>
+<option>10:30 AM</option>
+<option>11:00 AM</option>
+<option>01:00 PM</option>
+<option>02:00 PM</option>
+<option>03:00 PM</option>
+</select>
+</div>
+<div class="field">
+<label>Service *</label>
+<select aria-label="service" name="service" required="">
+<option value="">Select service</option>
+<option>Tooth Extraction</option><option>Dental Restoration</option><option>Pasta/Tooth Filling</option><option>Oral Prophylaxis and Cleaning</option><option>Fixed Bridge</option><option>Zirconia Crowns</option><option>Porcelain-Fused-to-Mental (PFM)</option><option>Tightlights</option><option>Wisdom Tooth Removal</option><option>Impacted Tooth Removal</option><option>Braces Installations / Orthodontic Services</option>
+</select>
+</div>
+<div class="field">
+<label for="doctorSelect">Doctor *</label>
+<select id="doctorSelect" name="doctor_id" required="">
+<option value="">Select dentist</option>
+</select>
+</div>
+</div>
+</section>
+<div class="heading-actions">
+<button class="btn btn-outline" type="reset">Clear form</button>
+<button class="btn btn-primary" type="submit">Register walk-in patient</button>
+</div>
+</form>
+<aside>
+<section class="panel">
+<div class="panel-head">
+<h3>Schedule information</h3>
+</div>
+<p class="small-note">
         Select the patient's preferred date, time, service, and dentist.
         The appointment will be marked as Confirmed after successful registration.
       </p>
-    </section>
-  </aside>
+</section>
+</aside>
 </div>
