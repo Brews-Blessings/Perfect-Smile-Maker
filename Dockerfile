@@ -1,4 +1,3 @@
-
 FROM node:24
 
 WORKDIR /app
@@ -11,6 +10,9 @@ RUN npm ci --omit=dev
 
 # Copy backend source files
 COPY backend/ ./
+
+# Copy frontend files
+COPY frontend/ /frontend/
 
 EXPOSE 3000
 
