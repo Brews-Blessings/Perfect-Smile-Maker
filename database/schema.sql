@@ -28,6 +28,9 @@ CREATE TABLE IF NOT EXISTS patient (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Doctor  (indexes: PRIMARY)
+-- The clinic has ONE doctor. Doctors are read-only in the app (no Manage
+-- Doctors process in the DFD); the doctor is added through sample_data.sql only.
+-- With one doctor, a time slot is taken as soon as any appointment holds it.
 CREATE TABLE IF NOT EXISTS doctor (
   doctor_id    INT         NOT NULL AUTO_INCREMENT,
   doctor_name  VARCHAR(50) DEFAULT NULL,
@@ -49,6 +52,10 @@ CREATE TABLE IF NOT EXISTS `user` (
 --               fk_appt_user, idx_appt_datetime  => 11 indexes in the database)
 -- Foreign keys use MySQL's default behavior (no ON DELETE / ON UPDATE clause),
 -- so a patient, doctor or user that has appointments cannot be deleted.
+-- appointment_status holds one of five values:
+--   Pending / Confirmed / Completed / Cancelled / No-show
+-- ('Scheduled' is no longer used. 'No Appointment' is a display label only
+--  and is never stored.)
 CREATE TABLE IF NOT EXISTS appointment (
   appointment_id        INT         NOT NULL AUTO_INCREMENT,
   patient_id            INT         NOT NULL,
@@ -57,7 +64,7 @@ CREATE TABLE IF NOT EXISTS appointment (
   procedure_type        VARCHAR(50) DEFAULT NULL,
   booking_type          VARCHAR(20) DEFAULT NULL,   -- 'Online' or 'Walk-in'
   appointment_datetime  DATETIME    DEFAULT NULL,
-  appointment_status    VARCHAR(20) DEFAULT NULL,   -- Scheduled / Completed / Cancelled / No-show
+  appointment_status    VARCHAR(20) DEFAULT NULL,   -- Pending / Confirmed / Completed / Cancelled / No-show
   PRIMARY KEY (appointment_id),
   KEY fk_appt_patient (patient_id),
   KEY fk_appt_doctor (doctor_id),
