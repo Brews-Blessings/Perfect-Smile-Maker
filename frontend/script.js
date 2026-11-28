@@ -362,7 +362,6 @@ async function openPopup(name, title = '', message = '', details = '') {
 function closePopup() { const root = $('#modalRoot'); if (!root) return; root.classList.remove('open'); root.setAttribute('aria-hidden','true'); root.innerHTML = ''; }
 async function openAppointmentPopup(appointmentId) {
   const appointment = appointments.find(a => a.appointment_id === Number(appointmentId)); if (!appointment) return;
-  if (currentRole !== 'owner') { toast('Appointment editing is not available for Receptionist accounts in the current backend.'); return; }
   await openPopup('owner-update-status'); const form = $('#modalRoot form'); if (!form) return;
   const select = form.elements.namedItem('status'); if (select) { select.innerHTML = statusOptions(appointment.status); select.value = appointment.status; }
   form.addEventListener('submit', async event => {
@@ -432,4 +431,158 @@ document.addEventListener('invalid', event => {
     $('#loginScreen')?.classList.add('hidden'); $('#app')?.classList.remove('hidden');
     await setPage('dashboard');
   } catch (error) { clearSession(); toast(error.message || 'Please sign in again.'); }
+})();
+
+// ===== Appointment calendar (date filter with appointment dots) =====
+(function () {
+  const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  const WEEKDAYS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+  let calYear = 0;
+  let calMonth = 0;
+  let calSelected = '';
+
+  const pad = n => String(n).padStart(2, '0');
+  const isoDate = (y, m, d) => `${y}-${pad(m + 1)}-${pad(d)}`;
+
+  function appointmentISO(a) {
+    const raw = String(a.date || '');
+    if (/^\d{4}-\d{2}-\d{2}/.test(raw)) return raw.slice(0, 10);
+    const d = new Date(raw);
+    return Number.isNaN(d.getTime()) ? '' : isoDate(d.getFullYear(), d.getMonth(), d.getDate());
+  }
+
+  function minutesOf(a) {
+    const m = String(a.time || '').match(/(\d+):(\d+)\s*(AM|PM)?/i);
+    if (!m) return 0;
+    let h = Number(m[1]);
+    if (m[3]) { h = h % 12; if (/pm/i.test(m[3])) h += 12; }
+    return h * 60 + Number(m[2]);
+  }
+
+  function groupByDay() {
+    const groups = {};
+    const list = typeof appointments !== 'undefined' ? appointments : [];
+    list.forEach(a => {
+      const key = appointmentISO(a);
+      if (key) (groups[key] = groups[key] || []).push(a);
+    });
+    return groups;
+  }
+
+  function longLabel(key) {
+    return new Date(`${key}T00:00:00`).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+  }
+
+  function updateTrigger() {
+    const input = document.getElementById('appointmentDate');
+    const btn = document.getElementById('appointmentDateBtn');
+    if (!input || !btn) return;
+    btn.textContent = input.value
+      ? new Date(`${input.value}T00:00:00`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+      : 'Filter by date';
+  }
+
+  function setFilter(value) {
+    const input = document.getElementById('appointmentDate');
+    if (!input) return;
+    input.value = value;
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+    updateTrigger();
+  }
+
+  function render() {
+    const overlay = document.getElementById('calendarOverlay');
+    if (!overlay) return;
+    const groups = groupByDay();
+    const firstWeekday = new Date(calYear, calMonth, 1).getDay();
+    const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+    const now = new Date();
+    const todayKey = isoDate(now.getFullYear(), now.getMonth(), now.getDate());
+
+    let cells = '';
+    for (let i = 0; i < firstWeekday; i++) cells += '<span class="cal-cell cal-empty"></span>';
+    for (let d = 1; d <= daysInMonth; d++) {
+      const key = isoDate(calYear, calMonth, d);
+      const count = (groups[key] || []).length;
+      cells += `<button type="button" class="cal-cell cal-day${key === todayKey ? ' cal-today' : ''}${key === calSelected ? ' cal-selected' : ''}" data-cal-day="${key}">${d}${count ? `<span class="cal-dot" title="${count} appointment(s)"></span>` : ''}</button>`;
+    }
+
+    let details = '<p class="cal-hint">Select a day. Days with a yellow dot have appointments.</p>';
+    if (calSelected) {
+      const dayList = (groups[calSelected] || []).slice().sort((a, b) => minutesOf(a) - minutesOf(b));
+      details = `<div class="cal-details-title">${esc(longLabel(calSelected))} · ${dayList.length} appointment(s)</div>` +
+        (dayList.length
+          ? dayList.map(a => `<div class="cal-item"><div><strong>${esc(a.time)} · ${esc(a.patient)}</strong><small>${esc(a.service)} · ${esc(getDoctor(a))}</small></div><span class="status ${cls(a.status)}">${esc(a.status)}</span><button type="button" class="action-link" data-manage="${a.appointment_id}" data-cal-dismiss>View</button></div>`).join('')
+          : '<p class="cal-hint">No appointments on this day.</p>');
+    }
+
+    overlay.innerHTML = `
+      <div class="cal-card" role="dialog" aria-label="Appointment calendar">
+        <div class="cal-head">
+          <button type="button" class="cal-nav" data-cal-nav="-1" aria-label="Previous month">‹</button>
+          <strong>${MONTH_NAMES[calMonth]} ${calYear}</strong>
+          <button type="button" class="cal-nav" data-cal-nav="1" aria-label="Next month">›</button>
+          <button type="button" class="modal-close" data-cal-dismiss aria-label="Close">×</button>
+        </div>
+        <div class="cal-weekdays">${WEEKDAYS.map(w => `<span>${w}</span>`).join('')}</div>
+        <div class="cal-grid">${cells}</div>
+        <div class="cal-details">${details}</div>
+        <div class="cal-foot">
+          <button type="button" class="btn btn-outline" data-cal-clear>Clear</button>
+          <button type="button" class="btn btn-outline" data-cal-today>Today</button>
+          <button type="button" class="btn btn-primary" data-cal-dismiss>Done</button>
+        </div>
+      </div>`;
+  }
+
+  function openCalendar() {
+    const input = document.getElementById('appointmentDate');
+    const base = input && input.value ? new Date(`${input.value}T00:00:00`) : new Date();
+    calYear = base.getFullYear();
+    calMonth = base.getMonth();
+    calSelected = input ? input.value : '';
+    let overlay = document.getElementById('calendarOverlay');
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.id = 'calendarOverlay';
+      overlay.className = 'cal-overlay';
+      document.body.appendChild(overlay);
+    }
+    overlay.classList.add('open');
+    render();
+  }
+
+  function closeCalendar() {
+    const overlay = document.getElementById('calendarOverlay');
+    if (overlay) overlay.classList.remove('open');
+  }
+
+  document.addEventListener('click', event => {
+    if (event.target.closest('#appointmentDateBtn')) { openCalendar(); return; }
+    const overlay = document.getElementById('calendarOverlay');
+    if (!overlay || !overlay.classList.contains('open')) return;
+    if (event.target === overlay || event.target.closest('[data-cal-dismiss]')) { closeCalendar(); return; }
+    const nav = event.target.closest('[data-cal-nav]');
+    if (nav) {
+      calMonth += Number(nav.dataset.calNav);
+      if (calMonth < 0) { calMonth = 11; calYear -= 1; }
+      if (calMonth > 11) { calMonth = 0; calYear += 1; }
+      render();
+      return;
+    }
+    const day = event.target.closest('[data-cal-day]');
+    if (day) { calSelected = day.dataset.calDay; setFilter(calSelected); render(); return; }
+    if (event.target.closest('[data-cal-today]')) {
+      const t = new Date();
+      calYear = t.getFullYear();
+      calMonth = t.getMonth();
+      calSelected = isoDate(calYear, calMonth, t.getDate());
+      setFilter(calSelected);
+      render();
+      return;
+    }
+    if (event.target.closest('[data-cal-clear]')) { calSelected = ''; setFilter(''); render(); }
+  });
+
+  document.addEventListener('keydown', event => { if (event.key === 'Escape') closeCalendar(); });
 })();
