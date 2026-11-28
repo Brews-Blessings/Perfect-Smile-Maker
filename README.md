@@ -22,7 +22,7 @@ Using MySQL Workbench, execute these files in order:
 1. database/schema.sql
 2. database/sample_data.sql (run once only)
 
-Or use the MySQL command line:
+Or use the MySQL command line: 
 
 mysql -u root -p < database/schema.sql
 mysql -u root -p psm_db < database/sample_data.sql
