@@ -38,10 +38,6 @@ The following accounts are intended for testing the application's Owner and Rece
 | Owner | owner01 | emman1234567 |
 | Receptionist | recep01 | chess1234567 |
 
-*Note:* Replace the placeholders above with the actual demo credentials configured in database/sample_data.sql.
-
-These accounts allow the evaluator to test the application using both Owner and Receptionist access.
-
 ## 4. Configure the Backend
 
 Navigate to the backend directory:
