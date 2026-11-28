@@ -9,9 +9,9 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
 
 :root {
-  --red: #c92f4b;
-  --red-dark: #b6223d;
-  --pink: #fff0f2;
+  --red: #d4a017;
+  --red-dark: #b8860b;
+  --pink: #fff7df;
   --ink: #252832;
   --muted: #818794;
   --line: #eceef2;
@@ -67,9 +67,9 @@ button {
   color: #fff;
   background: linear-gradient(
     145deg,
-    #bd2542 0%,
-    #d94b66 58%,
-    #f08b9b 100%
+    #b8860b 0%,
+    #e0b83f 58%,
+    #f4d77b 100%
   );
   display: flex;
   flex-direction: column;
@@ -220,7 +220,7 @@ button {
 input:focus,
 select:focus,
 textarea:focus {
-  border-color: #d96b7f !important;
+  border-color: #d4a017 !important;
   box-shadow: 0 0 0 3px #c92f4b12;
 }
 
@@ -252,7 +252,7 @@ textarea:focus {
 }
 
 .btn-outline:hover {
-  border-color: #d96b7f;
+  border-color: #d4a017;
   color: var(--red);
 }
 
@@ -356,7 +356,7 @@ textarea:focus {
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  background: #fae4e8;
+  background: #fff0c2;
   color: var(--red);
   display: grid;
   place-items: center;
@@ -598,8 +598,8 @@ tbody tr:last-child td {
   border-radius: 50%;
   display: grid;
   place-items: center;
-  background: #f8e7ea;
-  color: #bb4258;
+  background: #fff3cd;
+  color: #9a7200;
   font-size: 9px;
   font-weight: 700;
 }
@@ -678,8 +678,8 @@ tbody tr:last-child td {
 }
 
 .quick-item:hover {
-  border-color: #e5a0ac;
-  background: #fffafb;
+  border-color: #e4c66b;
+  background: #fffdf5;
 }
 
 .quick-icon {
@@ -731,7 +731,7 @@ tbody tr:last-child td {
 
 .toolbar input:focus,
 .toolbar select:focus {
-  border-color: #d96b7f;
+  border-color: #d4a017;
 }
 
 
