@@ -1,4 +1,3 @@
-
 const router = require('express').Router();
 const db = require('../db');
 
@@ -476,13 +475,13 @@ router.post('/', authenticateToken, async (req, res) => {
 
 // ==========================================
 // PATCH /api/appointments/:id/status
-// Update appointment status (Owner only)
+// Update appointment status (Owner and Receptionist)
 // ==========================================
 
 router.patch(
   '/:id/status',
   authenticateToken,
-  authorizeRoles('owner'),
+  authorizeRoles('owner', 'receptionist'),
   async (req, res) => {
     try {
       const appointmentId = Number(req.params.id);
