@@ -1,3 +1,4 @@
+
 const router = require('express').Router();
 const db = require('../db');
 
@@ -384,7 +385,8 @@ router.post('/', authenticateToken, async (req, res) => {
       });
     }
 
-    // Check for an existing appointment
+    // Check for an existing active appointment
+    // Cancelled appointments do not occupy a slot.
     const [conflicts] = await connection.query(
       `SELECT appointment_id
        FROM appointment
@@ -495,7 +497,10 @@ router.patch(
       }
 
       // Validate appointment status
-      if (!ALLOWED_STATUSES.includes(appointment_status)) {
+      if (
+        typeof appointment_status !== 'string' ||
+        !ALLOWED_STATUSES.includes(appointment_status)
+      ) {
         return res.status(400).json({
           success: false,
           message: 'Invalid appointment status.'

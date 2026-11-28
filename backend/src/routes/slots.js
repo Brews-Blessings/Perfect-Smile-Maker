@@ -1,3 +1,4 @@
+
 const router = require('express').Router();
 const db = require('../db');
 const { authenticateToken } = require('../middleware/auth');
@@ -35,7 +36,6 @@ function isValidCalendarDate(value) {
 router.get('/slots', authenticateToken, async (req, res) => {
   try {
     const { doctor_id, date } = req.query;
-
     const selectedDoctor = Number(doctor_id);
 
     // Validate required parameters
@@ -77,13 +77,15 @@ router.get('/slots', authenticateToken, async (req, res) => {
       });
     }
 
-    // Get current date and time from MySQL
-    const [clockRows] = await db.query(
-      'SELECT CURDATE() AS today, CURTIME() AS current_time'
-    );
+    // Get current date and time directly as formatted strings
+    const [clockRows] = await db.query(`
+      SELECT
+        DATE_FORMAT(CURDATE(), '%Y-%m-%d') AS today,
+        TIME_FORMAT(CURTIME(), '%H:%i:%s') AS current_time
+    `);
 
-    const today = String(clockRows[0].today).slice(0, 10);
-    const currentTime = String(clockRows[0].current_time).slice(0, 8);
+    const today = clockRows[0].today;
+    const currentTime = clockRows[0].current_time;
 
     // Reject past dates
     if (date < today) {
@@ -94,9 +96,10 @@ router.get('/slots', authenticateToken, async (req, res) => {
     }
 
     // Retrieve booked appointment times
-    // Only cancelled appointments are excluded.
+    // All appointments except cancelled ones occupy a slot.
     const [appointments] = await db.query(
-      `SELECT TIME(appointment_datetime) AS appointment_time
+      `SELECT
+         TIME_FORMAT(appointment_datetime, '%H:%i:%s') AS appointment_time
        FROM appointment
        WHERE doctor_id = ?
          AND DATE(appointment_datetime) = ?
@@ -106,9 +109,7 @@ router.get('/slots', authenticateToken, async (req, res) => {
 
     // Store booked times
     const bookedTimes = new Set(
-      appointments.map(appointment =>
-        String(appointment.appointment_time).substring(0, 8)
-      )
+      appointments.map(appointment => appointment.appointment_time)
     );
 
     // Determine slot availability
